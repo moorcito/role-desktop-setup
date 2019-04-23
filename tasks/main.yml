@@ -1,0 +1,14 @@
+---
+- name: Install desktop packages
+  apt:
+    name: "{{ desktop_packages }}"
+    state: latest
+
+- name: Include sublime installation tasks
+  include_tasks: sublime-install.yml
+
+- name: Include oh-my-zsh installation tasks
+  include_tasks: ohmyzsh-install.yml
+
+- name: Include tilix installation tasks
+  include_tasks: tilix-install.yml

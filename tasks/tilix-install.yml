@@ -1,0 +1,35 @@
+---
+- name: Install Tilix dependencies
+  apt:
+    name: "{{ tilix_dependencies }}"
+    state: latest
+  vars:
+    tilix_dependencies:
+      - tilix
+      - dconf-cli
+
+- name: Add tilix conditional to .bashrc
+  blockinfile:
+    path: "/home/{{ ansible_user }}/.bashrc"
+    block: |
+      if [ $TILIX_ID ] || [ $VTE_VERSION ]; then
+        source /etc/profile.d/vte.sh
+      fi
+    marker: ""
+
+- name: Create tilix symbolic link
+  file:
+    src: /etc/profile.d/vte-2.91.sh
+    dest: /etc/profile.d/vte.sh
+    state: link
+
+- name: Copy Tilix config file
+  copy:
+    src: files/tilix.dconf
+    dest: /tmp/tilix.dconf
+    mode: 0777
+
+- name: Import Tilix configuration for {{ ansible_user }}
+  raw: "dconf load /com/gexperts/Tilix/ < /tmp/tilix.dconf"
+  args:
+    executable: /bin/bash
